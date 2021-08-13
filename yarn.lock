@@ -2316,6 +2316,11 @@ lru-cache@^6.0.0:
   dependencies:
     yallist "^4.0.0"
 
+ltsv@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/ltsv/-/ltsv-2.0.0.tgz#793089248c3085333d3679f7911f2f035d9a33d5"
+  integrity sha512-GHuxtVXN2n3nIdoTAb8SoNsTGAyfvLhqQ+vgowQUp2oHD8kWtj3HQFGhbP0opvABvbIDoBNt7MTXFZZtCyV3Pw==
+
 make-dir@^3.0.2:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-3.1.0.tgz#415e967046b3a7f1d185277d84aa58203726a13f"
@@ -2467,6 +2472,13 @@ next@11.1.0:
     util "0.12.3"
     vm-browserify "1.1.2"
     watchpack "2.1.1"
+
+nginx-access-log@^1.0.9:
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/nginx-access-log/-/nginx-access-log-1.0.9.tgz#e94f6e9a9df3198a38601003ad9842087eb60980"
+  integrity sha512-pVDEVhOrVLc5swd6wgdilUfMvm566A/f+/QWNIPjE5lt+Jvl+GunYRSoJ6yzarBuHh4fCcJVBEQqK0peuB+Pcw==
+  dependencies:
+    ltsv "^2.0.0"
 
 node-fetch@2.6.1:
   version "2.6.1"
