@@ -10,17 +10,21 @@ import { parse, digest } from 'nginx-access-log'
 import NginxDigestTable from '../components/NginxDigestTable'
 import { useRouter } from 'next/router'
 
+const DEFAULT_NAME = "NGINX LOG"
+const DEFAULT_URL = "/access.log"
+
 export default function Home() {
   const router = useRouter()
-  const url = router.query.url ?? "/access.log"
+  const url = router.query.url ?? DEFAULT_URL
+  const baseName = router.query.name ?? DEFAULT_NAME
 
   const [rows, setRows] = useState([])
-  const [name, setName] = useState("nginx log")
+  const [name, setName] = useState(baseName)
+  const [tmpName, setTmpName] = useState(baseName)
   const [accesslogUrl, setUrl] = useState(url)
   const [tmpUrl, setTmpUrl] = useState(url)
 
   useEffect(() => {
-    accesslogUrl
     fetch(accesslogUrl)
       .then(async (res) => {
         const text = await res.text()
@@ -29,9 +33,25 @@ export default function Home() {
         const result = digest(logs, query)
 
         setRows(result)
-        console.log(res, text)
       })
-  }, [accesslogUrl])
+
+    if (name !== DEFAULT_NAME && accesslogUrl !== DEFAULT_URL) {
+      router.push({
+        pathname: "/",
+        query: {
+          name,
+          url: accesslogUrl
+        }
+      })
+    }
+  }, [accesslogUrl, name])
+
+  useEffect(() => {
+    setName(baseName)
+    setTmpName(baseName)
+    setUrl(url)
+    setTmpUrl(url)
+  }, [url, baseName])
 
   const [edit, setEdit] = useState(false)
 
@@ -40,11 +60,12 @@ export default function Home() {
       {
         edit ?
           <>
-            <TextField fullWidth label="log name" id="name" value={name} onChange={e => setName(e.target.value)} />
+            <TextField fullWidth label="log name" id="name" value={tmpName} onChange={e => setTmpName(e.target.value)} />
             <p></p>
             <TextField fullWidth label="nginx url" id="nginxUrl" value={tmpUrl} onChange={e => setTmpUrl(e.target.value)} />
             <p></p>
             <Button variant="contained" onClick={() => {
+              setName(tmpName)
               setUrl(tmpUrl)
               setEdit(false)
             }}>設定する</Button>
