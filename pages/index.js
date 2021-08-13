@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import Box from '@material-ui/core/Box'
-import Modal from '@material-ui/core/Modal'
 import TextField from '@material-ui/core/TextField'
-
 import Button from '@material-ui/core/Button'
 import Container from '@material-ui/core/Container'
+import SettingsIcon from '@material-ui/icons/Settings';
+
 import { parse, digest } from 'nginx-access-log'
 
 import NginxDigestTable from '../components/NginxDigestTable'
@@ -56,7 +55,7 @@ export default function Home() {
   const [edit, setEdit] = useState(false)
 
   return (
-    <Container>
+    <>
       {
         edit ?
           <>
@@ -68,17 +67,16 @@ export default function Home() {
               setName(tmpName)
               setUrl(tmpUrl)
               setEdit(false)
-            }}>設定する</Button>
+            }}>変更する</Button>
           </>
           :
           <>
-            <p>{name}: {accesslogUrl}</p>
-            <p></p>
-            <Button variant="contained" onClick={() => setEdit(true)} >変更する</Button>
+            <p><SettingsIcon /> {name}: {accesslogUrl}</p>
+            {/* <Button variant="contained" onClick={() => setEdit(true)} >変更する</Button> */}
           </>
       }
 
       <NginxDigestTable rows={rows} />
-    </Container>
+    </>
   )
 }
