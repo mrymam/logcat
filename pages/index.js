@@ -10,6 +10,7 @@ import { parse, digest } from 'nginx-access-log'
 
 import NginxDigestTable from '../components/NginxDigestTable'
 import { useRouter } from 'next/router'
+import { Container } from '@material-ui/core'
 
 const DEFAULT_NAME = "NGINX LOG"
 const DEFAULT_URL = "/access.log"
@@ -62,6 +63,9 @@ export default function Home() {
     patternButton: {
       textTransform: 'none',
       marginRight: "8px"
+    },
+    url: {
+      marginRight: "8px"
     }
   }
 
@@ -83,12 +87,38 @@ export default function Home() {
             <p></p>
           </>
           :
-          <>
-            <p><SettingsIcon onClick={() => setEdit(true)} /> {accesslogUrl}</p>
-            {/* <Button variant="contained" onClick={() => setEdit(true)} >変更する</Button> */}
-          </>
+          <Grid
+            container
+            direction="row"
+            justifyContent="flex-start"
+            alignItems="center"
+            mb={2}
+            // spacing={10}
+            container
+          >
+            <p style={style.url}>{accesslogUrl}</p>
+            <Button variant="contained" size={"small"} onClick={() => setEdit(true)} ><SettingsIcon />ログ名、URLを変更する</Button>
+          </Grid>
       }
 
+      <Grid
+        container
+        direction="row"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        mb={3}
+        mt={4}
+      >
+        {
+          uriPatterns.map(pattern =>
+
+            <Button style={style.patternButton} key={pattern} variant="outlined" size="small" onClick={() => deletePattern(pattern)}>{pattern}</Button>
+          )
+        }
+        <Button variant="contained" size={"small"} onClick={() => setEditPatten(true)}><AddIcon/>URIパターンを追加</Button>
+      </Grid>
+
+      <Grid mb={4}>
       {
         editPatten ? <>
           <TextField fullWidth label="Pattern" id="pattern" value={newPatten} onChange={e => setNewPatten(e.target.value)} />
@@ -99,21 +129,6 @@ export default function Home() {
             setEditPatten(false)
           }}>追加する</Button>
         </> : <></>
-      }
-
-      <p><AddIcon onClick={() => setEditPatten(true)} /></p>
-      <Grid
-        container
-        direction="row"
-        justifyContent="flex-start"
-        alignItems="flex-start"
-        mb={4}
-      >
-        {
-          uriPatterns.map(pattern =>
-
-            <Button style={style.patternButton} key={pattern} variant="outlined" size="small" onClick={() => deletePattern(pattern)}>{pattern}</Button>
-          )
         }
       </Grid>
 
