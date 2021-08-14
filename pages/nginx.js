@@ -1,13 +1,17 @@
-import { useState, useEffect, useContext } from 'react'
+import React, { useState, useEffect, useContext } from 'react'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import SettingsIcon from '@material-ui/icons/Settings'
 import ReplayIcon from '@material-ui/icons/Replay'
-import Fade from '@material-ui/core/Fade'
 import Box from '@material-ui/core/Box'
 
-import AddIcon from '@material-ui/icons/Add'
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Stack from '@material-ui/core/Stack';
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/core/Alert';
+
 import Grid from '@material-ui/core/Grid'
 import Modal from '@material-ui/core/Modal'
 
@@ -18,10 +22,13 @@ import { useRouter } from 'next/router'
 
 import { DocumentContext } from './_app'
 import { createTheme } from '@material-ui/core/styles'
-import { makeStyles } from '@material-ui/core/styles'
 
 const DEFAULT_NAME = "NGINX LOG"
 const DEFAULT_URL = "/access.log"
+
+const Alert = React.forwardRef(function Alert(props, ref) {
+  return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
+});
 
 export default function Nginx() {
   const router = useRouter()
@@ -31,6 +38,8 @@ export default function Nginx() {
   const [accesslogUrl, setUrl] = useState(DEFAULT_URL)
   const [tmpUrl, setTmpUrl] = useState(DEFAULT_URL)
   const [uriPatterns, setUriPatterns] = useState([])
+  const [backdrop, setBackdrop] = useState(false)
+  const [snackbar, setSnackbar] = useState(false)
 
   const [document, setDocument] = useContext(DocumentContext)
 
@@ -47,17 +56,15 @@ export default function Nginx() {
   const handleRetry = () => {
     fetch(accesslogUrl)
       .then(async (res) => {
+        setBackdrop(true)
         const text = await res.text()
         setLogs(parse(text))
+        setBackdrop(false)
       })
   }
 
   useEffect(() => {
-    fetch(accesslogUrl)
-      .then(async (res) => {
-        const text = await res.text()
-        setLogs(parse(text))
-      })
+    handleRetry()
   }, [accesslogUrl])
 
   useEffect(() => {
@@ -222,6 +229,7 @@ export default function Nginx() {
                 })
                 setUrl(tmpUrl)
                 setEdit(false)
+                setSnackbar(true)
               }}>変更</Button>
             </Box>
             <Box>
@@ -230,6 +238,22 @@ export default function Nginx() {
           </Grid>
         </Box>
       </Modal>
+
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={backdrop}
+        onClick={() => setBackdrop(false)}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
+
+      <Stack spacing={2} sx={{ width: '100%' }}>
+        <Snackbar open={snackbar} autoHideDuration={6000} onClose={() => setSnackbar(false)}>
+          <Alert onClose={() => setSnackbar(false)} severity="success" sx={{ width: '100%' }}>
+            URLを更新しました
+          </Alert>
+        </Snackbar>
+      </Stack>
     </>
   )
 }
