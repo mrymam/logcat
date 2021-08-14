@@ -1,8 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
-import Container from '@material-ui/core/Container'
-import SettingsIcon from '@material-ui/icons/Settings';
+import SettingsIcon from '@material-ui/icons/Settings'
+
+import AddIcon from '@material-ui/icons/Add'
+import Grid from '@material-ui/core/Grid'
 
 import { parse, digest } from 'nginx-access-log'
 
@@ -12,47 +14,57 @@ import { useRouter } from 'next/router'
 const DEFAULT_NAME = "NGINX LOG"
 const DEFAULT_URL = "/access.log"
 
+
 export default function Home() {
   const router = useRouter()
-  const url = router.query.url ?? DEFAULT_URL
-  const baseName = router.query.name ?? DEFAULT_NAME
-
   const [rows, setRows] = useState([])
-  const [name, setName] = useState(baseName)
-  const [tmpName, setTmpName] = useState(baseName)
-  const [accesslogUrl, setUrl] = useState(url)
-  const [tmpUrl, setTmpUrl] = useState(url)
+  const [logs, setLogs] = useState([])
+  const [name, setName] = useState(DEFAULT_NAME)
+  const [tmpName, setTmpName] = useState(DEFAULT_NAME)
+  const [accesslogUrl, setUrl] = useState(DEFAULT_URL)
+  const [tmpUrl, setTmpUrl] = useState(DEFAULT_URL)
+  const [uriPatterns, setUriPatterns] = useState([])
+
+  useEffect(() => {
+    if (router.asPath !== router.route) {
+      setUrl(router.query.url ?? DEFAULT_URL)
+      setTmpUrl(router.query.url ?? DEFAULT_URL)
+      setName(router.query.name ?? DEFAULT_NAME)
+      setTmpName(router.query.name ?? DEFAULT_NAME)
+      setUriPatterns(router.query.patterns ? router.query.patterns.split(",") : [])
+    }
+  }, [router]);
 
   useEffect(() => {
     fetch(accesslogUrl)
       .then(async (res) => {
         const text = await res.text()
-        const logs = parse(text)
-        const query = { uriPatterns: [] }
-        const result = digest(logs, query)
-
-        setRows(result)
+        setLogs(parse(text))
       })
-
-    if (name !== DEFAULT_NAME && accesslogUrl !== DEFAULT_URL) {
-      router.push({
-        pathname: "/",
-        query: {
-          name,
-          url: accesslogUrl
-        }
-      })
-    }
-  }, [accesslogUrl, name])
+  }, [accesslogUrl])
 
   useEffect(() => {
-    setName(baseName)
-    setTmpName(baseName)
-    setUrl(url)
-    setTmpUrl(url)
-  }, [url, baseName])
+    const query = { uriPatterns }
+    const result = digest(logs, query)
+    setRows(result)
+  }, [uriPatterns, logs])
 
   const [edit, setEdit] = useState(false)
+  const [editPatten, setEditPatten] = useState(false)
+  const [newPatten, setNewPatten] = useState("")
+
+  const deletePattern = (deletePattern) => {
+    const patterns = uriPatterns.filter(pattern => pattern !== deletePattern)
+    setUriPatterns(patterns)
+  }
+
+  const style = {
+    patternButton: {
+      textTransform: 'none',
+      marginRight: "8px"
+    }
+  }
+
 
   return (
     <>
@@ -68,13 +80,42 @@ export default function Home() {
               setUrl(tmpUrl)
               setEdit(false)
             }}>変更する</Button>
+            <p></p>
           </>
           :
           <>
-            <p><SettingsIcon /> {name}: {accesslogUrl}</p>
+            <p><SettingsIcon onClick={() => setEdit(true)} /> {accesslogUrl}</p>
             {/* <Button variant="contained" onClick={() => setEdit(true)} >変更する</Button> */}
           </>
       }
+
+      {
+        editPatten ? <>
+          <TextField fullWidth label="Pattern" id="pattern" value={newPatten} onChange={e => setNewPatten(e.target.value)} />
+          <p></p>
+          <Button variant="contained" onClick={() => {
+            setUriPatterns([...uriPatterns, newPatten])
+            setNewPatten("")
+            setEditPatten(false)
+          }}>追加する</Button>
+        </> : <></>
+      }
+
+      <p><AddIcon onClick={() => setEditPatten(true)} /></p>
+      <Grid
+        container
+        direction="row"
+        justifyContent="flex-start"
+        alignItems="flex-start"
+        mb={4}
+      >
+        {
+          uriPatterns.map(pattern =>
+
+            <Button style={style.patternButton} key={pattern} variant="outlined" size="small" onClick={() => deletePattern(pattern)}>{pattern}</Button>
+          )
+        }
+      </Grid>
 
       <NginxDigestTable rows={rows} />
     </>
