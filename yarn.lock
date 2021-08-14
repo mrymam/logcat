@@ -2612,10 +2612,10 @@ next@11.1.0:
     vm-browserify "1.1.2"
     watchpack "2.1.1"
 
-nginx-access-log@^1.0.10:
-  version "1.0.10"
-  resolved "https://registry.yarnpkg.com/nginx-access-log/-/nginx-access-log-1.0.10.tgz#d88fc66975300a6c37b80fb1af1297a9145b95d4"
-  integrity sha512-GmKLY0forRjW0LV03OLba3nbBwBYvRcBoK1/owhNFmlAxZ7oHCzvYkpreMhGGGwuahXzYGnrDWLyLshElSgk7A==
+nginx-access-log@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/nginx-access-log/-/nginx-access-log-1.1.0.tgz#2b4b2c32c4f184cded08b0554daf443a19818fc7"
+  integrity sha512-5BrobTCj+mq1ruhqAC9RExcPPLdOmalPdK9tLq/WRtlsK+oD671Z/NFZIOGr192cBFIRpHhDvRgyR8wXHuveFA==
   dependencies:
     ltsv "^2.0.0"
 
