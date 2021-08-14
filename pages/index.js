@@ -3,6 +3,7 @@ import { createTheme } from '@material-ui/core/styles';
 import { Box } from '@material-ui/system';
 import { useRouter } from 'next/router'
 import { useState } from 'react'
+import { CodeBlock, atomOneLight } from "react-code-blocks";
 
 const theme = createTheme({
   typography: {
@@ -13,6 +14,12 @@ const theme = createTheme({
 const getStartedTheme = createTheme({
   typography: {
     fontSize: 40
+  },
+})
+
+const stepTheme = createTheme({
+  typography: {
+    fontSize: 28
   },
 })
 
@@ -42,7 +49,50 @@ export default function Index() {
       <Grid item xs={12}>
         <Typography mt={8} fontWeight={"bold"} theme={getStartedTheme}>Get Started!</Typography>
         <Box fontSize={20} ml={1} mb={4}>
-          nginxのアクセスログを表示する
+          nginxのアクセスログを集計してみる
+        </Box>
+      </Grid>
+
+      <Grid mb={4}>
+        <Typography mt={2} fontWeight={"bold"} theme={stepTheme}>1. Set Log Format</Typography>
+        <Box fontSize={20} ml={1} mt={1} mb={4}>
+          nginxの設定ファイル(nginx.confなど)でのアクセスログのフォーマットを設定する。
+        </Box>
+        <CodeBlock
+          text={
+            `log_format ltsv "time:$time_local"
+            "\thost:$remote_addr"
+            "\tforwardedfor:$http_x_forwarded_for"
+            "\treq:$request"
+            "\tmethod:$request_method"
+            "\turi:$request_uri"
+            "\tstatus:$status"
+            "\tsize:$body_bytes_sent"
+            "\treferer:$http_referer"
+            "\tua:$http_user_agent"
+            "\treqtime:$request_time"
+            "\truntime:$upstream_http_x_runtime"
+            "\tapptime:$upstream_response_time"
+            "\tcache:$upstream_http_x_cache"
+            "\tvhost:$host";`
+          }
+          showLineNumbers={false}
+          startingLineNumber={false}
+          theme={atomOneLight}
+        />
+      </Grid>
+
+      <Grid mb={4}>
+        <Typography mt={2} fontWeight={"bold"} theme={stepTheme}>2. Set Endpoint to access.log </Typography>
+        <Box fontSize={20} ml={1} mt={1} mb={4}>
+          nginxのアクセスログをHTTP経由で取得できるようにエンドポイントを設定してください。例えば、nginxで静的ファイル配信するなどの方法があります。
+        </Box>
+      </Grid>
+
+      <Grid>
+        <Typography mt={2} fontWeight={"bold"} theme={stepTheme}>3. Set Name & Endpoint to Logcat </Typography>
+        <Box fontSize={20} ml={1} mt={1} mb={6}>
+          ログのエンドポイントと識別する名前を入力してスタートです。
         </Box>
       </Grid>
 
@@ -69,7 +119,7 @@ export default function Index() {
             />
         </Grid>
       </Grid>
-      <Grid pl={1}>
+      <Grid pl={1} mb={8}>
         <Button size="large" variant="contained" onClick={() => {
           router.push({
             pathname: "/nginx",

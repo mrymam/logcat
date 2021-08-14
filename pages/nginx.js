@@ -165,8 +165,8 @@ export default function Nginx() {
       >
         <Grid mr={2}>
           <TextField
-            width={800}
-            label="URIパターンを追加"
+            style={{width: 300}}
+            label="正規表現でURIパターンを追加"
             variant={"standard"}
             id="pattern"
             value={newPatten}
