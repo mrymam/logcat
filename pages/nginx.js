@@ -87,7 +87,7 @@ export default function Nginx() {
       query: {
         name,
         url: accesslogUrl,
-        patterns: patterns
+        patterns: patterns.join(",")
       }
     })
   }
