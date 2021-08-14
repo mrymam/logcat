@@ -82,7 +82,14 @@ export default function Nginx() {
 
   const deletePattern = (deletePattern) => {
     const patterns = uriPatterns.filter(pattern => pattern !== deletePattern)
-    setUriPatterns(patterns)
+    router.push({
+      pathname: "/nginx",
+      query: {
+        name,
+        url: accesslogUrl,
+        patterns: patterns
+      }
+    })
   }
 
   const style = {
@@ -166,9 +173,15 @@ export default function Nginx() {
             onChange={e => { setNewPatten(e.target.value) }}
             onKeyPress={e => {
               if (e.key == 'Enter') {
-                setUriPatterns([...uriPatterns, newPatten])
+                router.push({
+                  pathname: "/nginx",
+                  query: {
+                    name,
+                    url: accesslogUrl,
+                    patterns: [...uriPatterns, newPatten].join(",")
+                  }
+                })
                 setNewPatten("")
-                setEditPatten(false)
               }
             }}
             />
@@ -227,7 +240,6 @@ export default function Nginx() {
                     patterns: uriPatterns.join(",")
                   }
                 })
-                setUrl(tmpUrl)
                 setEdit(false)
                 setSnackbar(true)
               }}>変更</Button>

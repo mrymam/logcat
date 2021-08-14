@@ -3,7 +3,8 @@ import { DataGrid } from '@material-ui/data-grid'
 export default function NginxDigestTable(props) {
   const columns = [
     // { field: 'id', headerName: 'ID', width: 90 },
-    { field: 'uri', headerName: "URL", width: 120 },
+    { field: 'uri', headerName: "URL", width: 400 },
+    { field: 'method', headerName: "method", width: 140 },
     { field: 'count', headerName: "count", width: 120 },
     { field: 'count2xx', headerName: "2xx", width: 110  },
     { field: 'count3xx', headerName: "3xx", width: 110  },
