@@ -1,3 +1,4 @@
+import { createContext, useState } from 'react'
 import '../styles/globals.css'
 
 import styles from '../styles/Home.module.css'
@@ -6,6 +7,7 @@ import AppBar from '@material-ui/core/AppBar'
 import Box from '@material-ui/core/Box'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
+import Head from 'next/head'
 
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
@@ -14,9 +16,18 @@ import MenuIcon from '@material-ui/icons/Menu'
 console.log("もし不具合があれば、リポジトリにイシューお願いします")
 console.log("https://github.com/onyanko-pon/logcat/issues")
 
+export const DocumentContext = createContext([{ title: 'Title | Logcat'}, () => {}])
+
 function MyApp({ Component, pageProps }) {
 
-  return <>
+  const [document, setDocument] = useState({
+    title: 'Title | Logcat',
+  })
+
+  return <DocumentContext.Provider value={[document, setDocument]}>
+    <Head>
+      <title>{ document.title }</title>
+    </Head>
     <main>
       <Box sx={{ flexGrow: 1 }}>
         <AppBar position="static" color="secondary">
@@ -56,8 +67,8 @@ function MyApp({ Component, pageProps }) {
       >
         onyanko-pon/logcat
       </a>
-  </footer>
-  </>
+    </footer>
+  </DocumentContext.Provider>
 }
 
 export default MyApp

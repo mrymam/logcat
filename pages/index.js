@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useContext } from 'react'
 import TextField from '@material-ui/core/TextField'
 import Button from '@material-ui/core/Button'
 import SettingsIcon from '@material-ui/icons/Settings'
@@ -12,6 +12,8 @@ import NginxDigestTable from '../components/NginxDigestTable'
 import { useRouter } from 'next/router'
 import { Container } from '@material-ui/core'
 
+import { DocumentContext } from './_app'
+
 const DEFAULT_NAME = "NGINX LOG"
 const DEFAULT_URL = "/access.log"
 
@@ -21,17 +23,17 @@ export default function Home() {
   const [rows, setRows] = useState([])
   const [logs, setLogs] = useState([])
   const [name, setName] = useState(DEFAULT_NAME)
-  const [tmpName, setTmpName] = useState(DEFAULT_NAME)
   const [accesslogUrl, setUrl] = useState(DEFAULT_URL)
   const [tmpUrl, setTmpUrl] = useState(DEFAULT_URL)
   const [uriPatterns, setUriPatterns] = useState([])
+
+  const [document, setDocument] = useContext(DocumentContext)
 
   useEffect(() => {
     if (router.asPath !== router.route) {
       setUrl(router.query.url ?? DEFAULT_URL)
       setTmpUrl(router.query.url ?? DEFAULT_URL)
       setName(router.query.name ?? DEFAULT_NAME)
-      setTmpName(router.query.name ?? DEFAULT_NAME)
       setUriPatterns(router.query.patterns ? router.query.patterns.split(",") : [])
     }
   }, [router]);
@@ -49,6 +51,10 @@ export default function Home() {
     const result = digest(logs, query)
     setRows(result)
   }, [uriPatterns, logs])
+
+  useEffect(() => {
+    setDocument({ ...document, title: `${name} | Logcat` })
+  }, [name])
 
   const [edit, setEdit] = useState(false)
   const [editPatten, setEditPatten] = useState(false)
@@ -75,8 +81,6 @@ export default function Home() {
       {
         edit ?
           <>
-            <TextField fullWidth label="log name" id="name" value={tmpName} onChange={e => setTmpName(e.target.value)} />
-            <p></p>
             <TextField fullWidth label="nginx url" id="nginxUrl" value={tmpUrl} onChange={e => setTmpUrl(e.target.value)} />
             <p></p>
             <Button variant="contained" onClick={() => {
