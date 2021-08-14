@@ -7,6 +7,7 @@ import AppBar from '@material-ui/core/AppBar'
 import Box from '@material-ui/core/Box'
 import Toolbar from '@material-ui/core/Toolbar'
 import Typography from '@material-ui/core/Typography'
+import Link from '@material-ui/core/Link'
 import Head from 'next/head'
 
 import Button from '@material-ui/core/Button'
@@ -41,9 +42,11 @@ function MyApp({ Component, pageProps }) {
             >
               <MenuIcon />
             </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Logcat
-            </Typography>
+            <Link style={{ textDecoration: 'none', color: 'white' }} href={"/"} sx={{ flexGrow: 1 }}>
+              <Typography variant="h5" component="div">
+                Logcat
+              </Typography>
+            </Link>
             <Button color="inherit" href="/nginx">
               nginx
             </Button>
