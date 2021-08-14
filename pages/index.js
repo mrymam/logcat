@@ -1,142 +1,85 @@
-import { useState, useEffect, useContext } from 'react'
-import TextField from '@material-ui/core/TextField'
-import Button from '@material-ui/core/Button'
-import SettingsIcon from '@material-ui/icons/Settings'
-
-import AddIcon from '@material-ui/icons/Add'
-import Grid from '@material-ui/core/Grid'
-
-import { parse, digest } from 'nginx-access-log'
-
-import NginxDigestTable from '../components/NginxDigestTable'
+import { Container, Typography, Grid, TextField, Button } from '@material-ui/core'
+import { createTheme } from '@material-ui/core/styles';
+import { Box } from '@material-ui/system';
 import { useRouter } from 'next/router'
-import { Container } from '@material-ui/core'
+import { useState } from 'react'
 
-import { DocumentContext } from './_app'
+const theme = createTheme({
+  typography: {
+    fontSize: 55
+  },
+})
 
-const DEFAULT_NAME = "NGINX LOG"
-const DEFAULT_URL = "/access.log"
+const getStartedTheme = createTheme({
+  typography: {
+    fontSize: 40
+  },
+})
 
-
-export default function Home() {
+export default function Index() {
+  const [name, setName] = useState("Nginx Server1")
+  const [url, setUrl] = useState("")
   const router = useRouter()
-  const [rows, setRows] = useState([])
-  const [logs, setLogs] = useState([])
-  const [name, setName] = useState(DEFAULT_NAME)
-  const [accesslogUrl, setUrl] = useState(DEFAULT_URL)
-  const [tmpUrl, setTmpUrl] = useState(DEFAULT_URL)
-  const [uriPatterns, setUriPatterns] = useState([])
 
-  const [document, setDocument] = useContext(DocumentContext)
+  return <Container>
+    <Grid container spacing={0} mb={10}>
+      <Grid item xs={4}>
+        <Typography mt={12} mb={4} fontWeight={"bold"} theme={theme}>Logcat</Typography>
+        <Box fontSize={20}>
+          ログを整形して表示することができます。
+          現在は、nginxのログのみ対応しています。
+        </Box>
+      </Grid>
+      <Grid item xs={8}>
+        <img
+          src={'/table-image.svg'}
+          loading="lazy"
+        />
+      </Grid>
+    </Grid>
 
-  useEffect(() => {
-    if (router.asPath !== router.route) {
-      setUrl(router.query.url ?? DEFAULT_URL)
-      setTmpUrl(router.query.url ?? DEFAULT_URL)
-      setName(router.query.name ?? DEFAULT_NAME)
-      setUriPatterns(router.query.patterns ? router.query.patterns.split(",") : [])
-    }
-  }, [router]);
-
-  useEffect(() => {
-    fetch(accesslogUrl)
-      .then(async (res) => {
-        const text = await res.text()
-        setLogs(parse(text))
-      })
-  }, [accesslogUrl])
-
-  useEffect(() => {
-    const query = { uriPatterns }
-    const result = digest(logs, query)
-    setRows(result)
-  }, [uriPatterns, logs])
-
-  useEffect(() => {
-    setDocument({ ...document, title: `${name} | Logcat` })
-  }, [name])
-
-  const [edit, setEdit] = useState(false)
-  const [editPatten, setEditPatten] = useState(false)
-  const [newPatten, setNewPatten] = useState("")
-
-  const deletePattern = (deletePattern) => {
-    const patterns = uriPatterns.filter(pattern => pattern !== deletePattern)
-    setUriPatterns(patterns)
-  }
-
-  const style = {
-    patternButton: {
-      textTransform: 'none',
-      marginRight: "8px"
-    },
-    url: {
-      marginRight: "8px"
-    }
-  }
-
-
-  return (
-    <>
-      {
-        edit ?
-          <>
-            <TextField fullWidth label="nginx url" id="nginxUrl" value={tmpUrl} onChange={e => setTmpUrl(e.target.value)} />
-            <p></p>
-            <Button variant="contained" onClick={() => {
-              setName(tmpName)
-              setUrl(tmpUrl)
-              setEdit(false)
-            }}>変更する</Button>
-            <p></p>
-          </>
-          :
-          <Grid
-            container
-            direction="row"
-            justifyContent="flex-start"
-            alignItems="center"
-            mb={2}
-            // spacing={10}
-            container
-          >
-            <p style={style.url}>{accesslogUrl}</p>
-            <Button variant="contained" size={"small"} onClick={() => setEdit(true)} ><SettingsIcon />ログ名、URLを変更する</Button>
-          </Grid>
-      }
-
-      <Grid
-        container
-        direction="row"
-        justifyContent="flex-start"
-        alignItems="flex-start"
-        mb={3}
-        mt={4}
-      >
-        {
-          uriPatterns.map(pattern =>
-
-            <Button style={style.patternButton} key={pattern} variant="outlined" size="small" onClick={() => deletePattern(pattern)}>{pattern}</Button>
-          )
-        }
-        <Button variant="contained" size={"small"} onClick={() => setEditPatten(true)}><AddIcon/>URIパターンを追加</Button>
+    <Grid container spacing={0}>
+      <Grid item xs={12}>
+        <Typography mt={8} fontWeight={"bold"} theme={getStartedTheme}>Get Started!</Typography>
+        <Box fontSize={20} ml={1} mb={4}>
+          nginxのアクセスログを表示する
+        </Box>
       </Grid>
 
-      <Grid mb={4}>
-      {
-        editPatten ? <>
-          <TextField fullWidth label="Pattern" id="pattern" value={newPatten} onChange={e => setNewPatten(e.target.value)} />
-          <p></p>
-          <Button variant="contained" onClick={() => {
-            setUriPatterns([...uriPatterns, newPatten])
-            setNewPatten("")
-            setEditPatten(false)
-          }}>追加する</Button>
-        </> : <></>
-        }
-      </Grid>
+      <Grid container xs={12}>
+        <Grid xs={4} mb={4} pl={1} pr={1}>
+          <TextField
+            fullWidth
+            label="Log Name"
+            placeholder={"Nginx Server1"}
+            value={name}
+            onChange={e => { setName(e.target.value) }}
+            mb={4}
+          />
+        </Grid>
 
-      <NginxDigestTable rows={rows} />
-    </>
-  )
+        <Grid xs={8} mb={4}>
+          <TextField
+            fullWidth
+            label="URL"
+            placeholder={"https://example.com/access.log"}
+            value={url}
+            onChange={e => { setUrl(e.target.value) }}
+            mb={4}
+            />
+        </Grid>
+      </Grid>
+      <Grid pl={1}>
+        <Button size="large" variant="contained" onClick={() => {
+          router.push({
+            pathname: "/nginx",
+            query: {
+              name,
+              url
+            }
+          })
+        }}>Nginxのアクセスログを集計する</Button>
+      </Grid>
+    </Grid>
+  </Container>
 }
