@@ -23,6 +23,9 @@ import { useRouter } from 'next/router'
 import { DocumentContext } from './_app'
 import { createTheme } from '@material-ui/core/styles'
 
+import ReactGA from 'react-ga';
+
+
 const DEFAULT_NAME = "NGINX LOG"
 const DEFAULT_URL = "/access.log"
 
@@ -31,6 +34,9 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 });
 
 export default function Nginx() {
+  ReactGA.initialize('G-SFXWTBDBV6');
+  ReactGA.pageview('/nginx');
+
   const router = useRouter()
   const [rows, setRows] = useState([])
   const [logs, setLogs] = useState([])

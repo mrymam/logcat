@@ -4,6 +4,7 @@ import { Box } from '@material-ui/system';
 import { useRouter } from 'next/router'
 import { useState } from 'react'
 import { CodeBlock, atomOneLight } from "react-code-blocks";
+import ReactGA from 'react-ga';
 
 const theme = createTheme({
   typography: {
@@ -24,6 +25,9 @@ const stepTheme = createTheme({
 })
 
 export default function Index() {
+  ReactGA.initialize('G-SFXWTBDBV6');
+  ReactGA.pageview('/');
+
   const [name, setName] = useState("Nginx Server1")
   const [url, setUrl] = useState("")
   const router = useRouter()
