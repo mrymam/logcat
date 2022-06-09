@@ -29,7 +29,7 @@ const axios = require('axios');
 
 
 const DEFAULT_NAME = "NGINX LOG"
-const DEFAULT_URL = process.env.NODE_ENV == "prod" ? "https://log-cat.herokuapp.com/access.log" : "http://localhost:3000/access.log"
+const DEFAULT_URL = process.env.DEFAULT_URL ?? "http://localhost:3000/access.log"
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
