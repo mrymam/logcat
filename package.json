@@ -17,6 +17,7 @@
     "@material-ui/icons": "^5.0.0-beta.1",
     "@material-ui/styled-engine-sc": "^5.0.0-beta.1",
     "@material-ui/styles": "^4.11.4",
+    "axios": "^0.27.2",
     "next": "11.1.0",
     "nginx-access-log": "^1.1.0",
     "react": "17.0.2",

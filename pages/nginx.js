@@ -25,24 +25,27 @@ import { createTheme } from '@material-ui/core/styles'
 
 import ReactGA from 'react-ga';
 
+const axios = require('axios');
+
 
 const DEFAULT_NAME = "NGINX LOG"
-const DEFAULT_URL = "/access.log"
+const DEFAULT_URL = "http://localhost:3000/access.log"
 
 const Alert = React.forwardRef(function Alert(props, ref) {
   return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export default function Nginx() {
+export default function Nginx(props) {
   ReactGA.initialize('G-SFXWTBDBV6');
   ReactGA.pageview('/nginx');
 
   const router = useRouter()
-  const [rows, setRows] = useState([])
-  const [logs, setLogs] = useState([])
+  const rows = props.result
   const [name, setName] = useState(DEFAULT_NAME)
-  const [accesslogUrl, setUrl] = useState(DEFAULT_URL)
   const [tmpUrl, setTmpUrl] = useState(DEFAULT_URL)
+
+  const accesslogUrl = props.url
+
   const [uriPatterns, setUriPatterns] = useState([])
   const [backdrop, setBackdrop] = useState(false)
   const [snackbar, setSnackbar] = useState(false)
@@ -52,32 +55,11 @@ export default function Nginx() {
 
   useEffect(() => {
     if (router.asPath !== router.route) {
-      setUrl(router.query.url ?? DEFAULT_URL)
       setTmpUrl(router.query.url ?? DEFAULT_URL)
       setName(router.query.name ?? DEFAULT_NAME)
       setUriPatterns(router.query.patterns ? router.query.patterns.split(",") : [])
     }
   }, [router]);
-
-  const handleRetry = () => {
-    fetch(accesslogUrl)
-      .then(async (res) => {
-        setBackdrop(true)
-        const text = await res.text()
-        setLogs(parse(text))
-        setBackdrop(false)
-      })
-  }
-
-  useEffect(() => {
-    handleRetry()
-  }, [accesslogUrl])
-
-  useEffect(() => {
-    const query = { uriPatterns }
-    const result = digest(logs, query)
-    setRows(result)
-  }, [uriPatterns, logs])
 
   useEffect(() => {
     setDocument({ ...document, title: `${name} | Logcat` })
@@ -140,7 +122,7 @@ export default function Nginx() {
     <>
       <Grid mb={2}>
         <Grid xs={12}>
-          <Typography mb={1} fontWeight={"bold"} theme={titleTheme}>Nginx Access Log <ReplayIcon onClick={handleRetry} /></Typography>
+          <Typography mb={1} fontWeight={"bold"} theme={titleTheme}>Nginx Access Log <ReplayIcon onClick={() => router.reload()} /></Typography>
         </Grid>
 
         <Grid
@@ -274,4 +256,23 @@ export default function Nginx() {
       </Stack>
     </>
   )
+}
+
+export async function getServerSideProps(context) {
+
+  const url = (context.query.url && context.query.url != "") ? context.query.url : DEFAULT_URL
+  const res = await axios.get(url)
+  const text = res.data
+  const logs = parse(text)
+
+  const uriPatterns = context.query.patterns ? context.query.patterns.split(",") : []
+  const q = { uriPatterns }
+  const result = digest(logs, q)
+
+  return {
+    props: {
+      url,
+      result
+    }
+  }
 }
