@@ -1,4 +1,4 @@
-This is log viewer client app (https://zealous-franklin-13c0f2.netlify.app/)
+This is log viewer client app (https://log-cat.herokuapp.com/)
 Now, Logcat support only nginx access log.
 Then set access.log to ltsv format.
 
